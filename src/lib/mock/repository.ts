@@ -40,8 +40,18 @@ function workspaceKey(userId: string) {
 }
 
 function sanitizeSession(user: StoredUser): UserSession {
-  const { password: _password, ...session } = user;
-  return session;
+  // Returning the public session shape explicitly keeps password data out of any UI-facing state.
+  return {
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    company: user.company,
+    role: user.role,
+    plan: user.plan,
+    workspaceId: user.workspaceId,
+    onboardingCompleted: user.onboardingCompleted,
+    lastLoginAt: user.lastLoginAt,
+  };
 }
 
 function ensureUsers() {

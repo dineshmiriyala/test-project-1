@@ -1,5 +1,24 @@
 # Change Notes
 
+## 2026-04-06 16:53:02 IST
+
+Fixed server build and lint issues.
+
+Changed:
+
+- Reworded the forgot-password success message so JSX lint passes cleanly
+- Moved workspace persistence into a stable callback so the hook dependency warning is resolved
+- Returned the public session object explicitly so the repository no longer triggers an unused variable warning
+- Replaced CSS `start` and `end` alignment values with `flex-start` and `flex-end` for cleaner autoprefixer output
+- Updated the README with a clearer server run order: build first, then start
+- Restored the Next.js dynamic route page param type expected by the current app-router build
+- Wrapped route query tracking in a suspense-safe analytics tracker for production prerender
+- Removed the sign-in page dependency on `useSearchParams` so static generation can finish cleanly
+
+Validated:
+
+- `npm run build` now completes successfully on Next.js `15.5.14`
+
 ## 2026-04-05 20:42:20 IST
 
 Initial build of the Signal Lab Demo app.

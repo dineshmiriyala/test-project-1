@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { useAnalytics } from "@/components/providers/analytics-provider";
 import { useAuth } from "@/components/providers/auth-provider";
@@ -60,16 +60,20 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     }
   }, [session]);
 
-  function persistWorkspace(updater: (current: Workspace) => Workspace) {
-    if (!session || !workspace) {
-      throw new Error("No workspace is loaded.");
-    }
+  const persistWorkspace = useCallback(
+    (updater: (current: Workspace) => Workspace) => {
+      if (!session || !workspace) {
+        throw new Error("No workspace is loaded.");
+      }
 
-    const nextWorkspace = updater(workspace);
-    setWorkspace(nextWorkspace);
-    mockRepository.saveWorkspace(session.id, nextWorkspace);
-    return nextWorkspace;
-  }
+      // Keeping persistence inside a stable callback avoids stale closures and satisfies hook linting.
+      const nextWorkspace = updater(workspace);
+      setWorkspace(nextWorkspace);
+      mockRepository.saveWorkspace(session.id, nextWorkspace);
+      return nextWorkspace;
+    },
+    [session, workspace],
+  );
 
   const value = useMemo<WorkspaceContextValue>(
     () => ({
@@ -356,7 +360,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         }
       },
     }),
-    [analytics, isReady, pushToast, session, workspace],
+    [analytics, isReady, persistWorkspace, pushToast, workspace],
   );
 
   return <WorkspaceContext.Provider value={value}>{children}</WorkspaceContext.Provider>;

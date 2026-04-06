@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { PublicShell } from "@/components/layout/public-shell";
@@ -10,21 +10,31 @@ import { validateEmail, validatePassword } from "@/lib/forms/validators";
 
 export default function SignInPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { signIn, session, isReady } = useAuth();
   const [email, setEmail] = useState("alex@horizon.io");
   const [password, setPassword] = useState("password123");
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [nextPath, setNextPath] = useState("");
+
+  useEffect(() => {
+    try {
+      // Reading from window directly avoids the app-router suspense requirement for useSearchParams here.
+      const next = new URLSearchParams(window.location.search).get("next");
+      setNextPath(next || "");
+    } catch (readError) {
+      console.error("Failed to read next redirect param", readError);
+      setNextPath("");
+    }
+  }, []);
 
   useEffect(() => {
     if (!isReady || !session) {
       return;
     }
 
-    const next = searchParams.get("next");
-    router.replace(next || (session.onboardingCompleted ? "/app" : "/onboarding"));
-  }, [isReady, router, searchParams, session]);
+    router.replace(nextPath || (session.onboardingCompleted ? "/app" : "/onboarding"));
+  }, [isReady, nextPath, router, session]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -40,8 +50,7 @@ export default function SignInPage() {
       setIsSubmitting(true);
       setError("");
       const nextSession = await signIn({ email, password });
-      const next = searchParams.get("next");
-      router.replace(next || (nextSession.onboardingCompleted ? "/app" : "/onboarding"));
+      router.replace(nextPath || (nextSession.onboardingCompleted ? "/app" : "/onboarding"));
     } catch (submitError) {
       setError(submitError instanceof Error ? submitError.message : "Sign-in failed.");
     } finally {

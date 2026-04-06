@@ -42,7 +42,7 @@ export default function ForgotPasswordPage() {
           </label>
           {error ? <p className="field-error">{error}</p> : null}
           {isSent ? (
-            <p className="field-success">A fake reset email was "sent" to {email}.</p>
+            <p className="field-success">A fake reset email was sent to {email}.</p>
           ) : null}
           <button className="button-primary button-block" type="submit">
             Send reset link

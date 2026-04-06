@@ -9,12 +9,12 @@ export function generateStaticParams() {
   }));
 }
 
-export default function DocArticlePage({
+export default async function DocArticlePage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
-  const { slug } = params;
+  const { slug } = await params;
   const article = getDocBySlug(slug);
 
   if (!article) {

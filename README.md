@@ -128,6 +128,11 @@ You can also use:
 - `npm run start`
 - `npm run lint`
 
+For a server or production-style run:
+
+1. Run `npm run build`
+2. Then run `npm run start`
+
 ## Best test flow
 
 If you want a quick analytics test run, do this:
@@ -144,3 +149,5 @@ If you want a quick analytics test run, do this:
 ## Last updated
 
 - Initial implementation documented on `2026-04-05 20:42:20 IST`
+- Server build and lint fixes documented on `2026-04-06 16:53:02 IST`
+- Production build verified locally on `2026-04-06 16:56:45 IST`
