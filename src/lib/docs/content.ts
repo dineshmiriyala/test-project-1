@@ -24,7 +24,7 @@ export const docsContent: DocArticle[] = [
       },
       {
         heading: "How to wire your tracker later",
-        body: "Swap the export in the analytics adapter file with your real client. The pages already call the shared analytics contract instead of talking to any SDK directly.",
+        body: "Swap the export in the analytics adapter file with your real client if you want app-owned events. This repo also now loads a Fluxly autocapture script globally from the root layout for page views, clicks, forms, and page leave events.",
       },
     ],
   },
@@ -80,8 +80,12 @@ export const docsContent: DocArticle[] = [
         body: "Onboarding completion, project creation, task updates, and teammate invites already send explicit capture calls through the same client.",
       },
       {
+        heading: "Global autocapture",
+        body: "The root layout now injects a Fluxly config block and loads a Fluxly site script so the whole app auto-captures page views, clicks, form submits, and page leave events.",
+      },
+      {
         heading: "Safe default",
-        body: "The default analytics client only logs to the console. It gives you a safe place to confirm call timing before plugging in the real SDK.",
+        body: "The app-owned analytics adapter still only logs to the console. That keeps the built-in custom event layer safe while you test the external Fluxly script.",
       },
     ],
   },

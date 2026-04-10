@@ -1,5 +1,20 @@
 # Change Notes
 
+## 2026-04-10 16:32:21 IST
+
+Added Fluxly autocapture for end-to-end tracking tests.
+
+Changed:
+
+- Injected a global `window.__FLUXLY__` config block in the root layout
+- Loaded a PostHog-style Fluxly autocapture script on every route
+- Added the provided test API key and host for local tracking validation
+- Updated the README so the new tracking setup is easy to find
+
+Validated:
+
+- The app lint still passes after the script was added
+
 ## 2026-04-06 16:53:02 IST
 
 Fixed server build and lint issues.
