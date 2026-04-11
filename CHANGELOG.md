@@ -1,5 +1,21 @@
 # Change Notes
 
+## 2026-04-11 12:24:18 IST
+
+Moved Fluxly tracking to the official browser package.
+
+Changed:
+
+- Removed the old local copied Fluxly autocapture script
+- Loaded `@getfluxly/sdk-js@0.1.1` from jsDelivr in the root layout
+- Pointed Fluxly at the production API host `https://api.getfluxly.com`
+- Kept the existing test API key so the project continues to send events
+- Updated the README and in-app docs to match the new setup
+
+Validated:
+
+- The app lint still passes after switching to the CDN SDK
+
 ## 2026-04-10 16:32:21 IST
 
 Added Fluxly autocapture for end-to-end tracking tests.

@@ -11,7 +11,7 @@ It gives you:
 - Dashboard pages with local state
 - A dedicated analytics playground page
 - A small analytics adapter you can replace with your real tracker
-- A global Fluxly autocapture script that loads on every page
+- The official Fluxly browser SDK loaded from jsDelivr on every page
 
 ## What this project is for
 
@@ -110,13 +110,13 @@ What is already hooked up:
 - Project creation calls `capture("project_created", ...)`
 - Task changes call `capture("task_status_changed", ...)`
 - Team invites call `capture("teammate_invited", ...)`
-- Fluxly loads globally from the root layout and auto-captures page views, clicks, form submits, and page leave events
+- Fluxly loads globally from the root layout through the official `@getfluxly/sdk-js` browser package
 
 Fluxly test setup in this repo:
 
 - Config is injected in [`src/app/layout.tsx`](/Users/dineshmiriyala/projects/test-project-1/src/app/layout.tsx)
-- The autocapture bundle lives in [`public/fluxly-autocapture.js`](/Users/dineshmiriyala/projects/test-project-1/public/fluxly-autocapture.js)
-- The current test host is `http://192.168.0.198:8000`
+- The SDK script comes from `https://cdn.jsdelivr.net/npm/@getfluxly/sdk-js@0.1.1/dist/fluxly.iife.js`
+- The current API host is `https://api.getfluxly.com`
 - The current test key is the provided `pk_test_...` key in the root layout script block
 
 To plug in your real tracker:
@@ -128,7 +128,7 @@ To plug in your real tracker:
 To test the external Fluxly autocapture script:
 
 1. Start the app with `npm run dev`
-2. Open the site in a browser that can reach `http://192.168.0.198:8000`
+2. Open the site in a browser that can reach `https://api.getfluxly.com`
 3. Move through pages, click buttons and links, and submit forms
 4. Check your Fluxly project for `page_view`, `autocapture_click`, `autocapture_form`, and `page_leave`
 
@@ -168,3 +168,4 @@ If you want a quick analytics test run, do this:
 - Server build and lint fixes documented on `2026-04-06 16:53:02 IST`
 - Production build verified locally on `2026-04-06 16:56:45 IST`
 - Fluxly autocapture script added on `2026-04-10 16:32:21 IST`
+- Fluxly tracking moved to the official CDN package on `2026-04-11 12:24:18 IST`

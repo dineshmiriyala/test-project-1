@@ -14,15 +14,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
-        {/* Load the test Fluxly config first so the bootstrap file can read it on every page. */}
+        {/* Load the Fluxly config first so the official SDK can read it before it boots. */}
         <Script id="fluxly-config" strategy="beforeInteractive">
           {`window.__FLUXLY__ = {
   apiKey: "pk_test_X6VUAgh6_ZZFW7M0SZNgiCR19So5YO5hvsmZbVUsJ",
-  apiHost: "http://192.168.0.198:8000"
+  apiHost: "https://api.getfluxly.com"
 };`}
         </Script>
-        {/* Boot the Fluxly autocapture bundle after hydration, similar to a PostHog-style site script. */}
-        <Script id="fluxly-autocapture" src="/fluxly-autocapture.js" strategy="afterInteractive" />
+        {/* Use the published Fluxly browser package instead of the old local copied bootstrap file. */}
+        <Script
+          id="fluxly-sdk"
+          src="https://cdn.jsdelivr.net/npm/@getfluxly/sdk-js@0.1.1/dist/fluxly.iife.js"
+          strategy="afterInteractive"
+        />
       </head>
       <body>
         <AppProviders>{children}</AppProviders>

@@ -24,7 +24,7 @@ export const docsContent: DocArticle[] = [
       },
       {
         heading: "How to wire your tracker later",
-        body: "Swap the export in the analytics adapter file with your real client if you want app-owned events. This repo also now loads a Fluxly autocapture script globally from the root layout for page views, clicks, forms, and page leave events.",
+        body: "Swap the export in the analytics adapter file with your real client if you want app-owned events. This repo also loads the official Fluxly browser SDK globally from the root layout.",
       },
     ],
   },
@@ -81,11 +81,11 @@ export const docsContent: DocArticle[] = [
       },
       {
         heading: "Global autocapture",
-        body: "The root layout now injects a Fluxly config block and loads a Fluxly site script so the whole app auto-captures page views, clicks, form submits, and page leave events.",
+        body: "The root layout injects a Fluxly config block and then loads @getfluxly/sdk-js from jsDelivr so the whole app uses the official Fluxly browser package.",
       },
       {
         heading: "Safe default",
-        body: "The app-owned analytics adapter still only logs to the console. That keeps the built-in custom event layer safe while you test the external Fluxly script.",
+        body: "The app-owned analytics adapter still only logs to the console. That keeps the built-in custom event layer safe while you test the external Fluxly SDK.",
       },
     ],
   },
