@@ -1,5 +1,26 @@
 # Change Notes
 
+## 2026-04-13 21:56:01 IST
+
+Upgraded GetFluxly tracking and wired the app analytics adapter to the real SDK.
+
+Changed:
+
+- Switched the root layout to `@getfluxly/sdk-js@0.1.3`
+- Replaced the old `window.__FLUXLY__` setup with `window.__GFLUX__`
+- Replaced the old test API key with `pk_test_9xyqsogP_RAcYr86w1wwoXxzVnP0uU0gHtMffDM3s`
+- Mapped local `identify(...)`, `capture(...)`, `reset()`, and `destroy()` calls to `window.gflux`
+- Sent route changes as `route_viewed` so GetFluxly auto page views are not duplicated as the same event
+- Added more custom tracking for auth, workspace, notification, settings, and playground actions
+- Ignored the local `tsconfig.tsbuildinfo` file created by standalone TypeScript checks
+- Updated the README and in-app docs to explain the new tracking setup
+
+Validated:
+
+- `npm run build` passes
+- `npm run lint` passes
+- `npx tsc --noEmit` passes after the build-generated Next.js type files are present
+
 ## 2026-04-11 12:24:18 IST
 
 Moved Fluxly tracking to the official browser package.

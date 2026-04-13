@@ -6,4 +6,5 @@ export interface AnalyticsClient {
   identify: (userId: string, traits?: AnalyticsPayload) => void;
   capture: (event: string, props?: AnalyticsPayload) => void;
   reset: () => void;
+  destroy: () => void;
 }

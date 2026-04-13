@@ -166,6 +166,11 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
           }));
 
           const project = nextWorkspace.projects.find((entry) => entry.id === projectId);
+          analytics.capture("project_archive_toggled", {
+            projectId,
+            projectName: project?.name ?? "unknown",
+            archived: project?.archived ?? false,
+          });
           pushToast({
             tone: "info",
             title: project?.archived ? "Project archived" : "Project restored",
@@ -233,7 +238,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
           const task = nextWorkspace.tasks.find((entry) => entry.id === taskId);
           analytics.capture("task_status_changed", {
             taskId,
-            status: task?.status,
+            status: task?.status ?? "unknown",
           });
         } catch (error) {
           console.error("Failed to toggle task completion", error);
@@ -320,13 +325,20 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       },
       updateSettings(changes) {
         try {
-          persistWorkspace((current) => ({
+          const nextWorkspace = persistWorkspace((current) => ({
             ...current,
             settings: {
               ...current.settings,
               ...changes,
             },
           }));
+          analytics.capture("workspace_settings_updated", {
+            digestCadence: nextWorkspace.settings.digestCadence,
+            releaseAlerts: nextWorkspace.settings.releaseAlerts,
+            autoAssign: nextWorkspace.settings.autoAssign,
+            sidebarCollapsed: nextWorkspace.settings.sidebarCollapsed,
+            themeMode: nextWorkspace.settings.themeMode,
+          });
 
           pushToast({
             tone: "info",
@@ -344,7 +356,7 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
       },
       markNotificationRead(notificationId) {
         try {
-          persistWorkspace((current) => ({
+          const nextWorkspace = persistWorkspace((current) => ({
             ...current,
             notifications: current.notifications.map((notification) =>
               notification.id === notificationId
@@ -355,6 +367,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
                 : notification,
             ),
           }));
+          const notification = nextWorkspace.notifications.find((entry) => entry.id === notificationId);
+          analytics.capture("notification_marked_read", {
+            notificationId,
+            notificationTitle: notification?.title ?? "unknown",
+            notificationType: notification?.type ?? "unknown",
+          });
         } catch (error) {
           console.error("Failed to update notification", error);
         }

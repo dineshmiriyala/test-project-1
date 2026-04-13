@@ -10,8 +10,8 @@ It gives you:
 - Onboarding flow
 - Dashboard pages with local state
 - A dedicated analytics playground page
-- A small analytics adapter you can replace with your real tracker
-- The official Fluxly browser SDK loaded from jsDelivr on every page
+- A small analytics adapter wired to GetFluxly custom events
+- The official GetFluxly browser SDK loaded from jsDelivr on every page
 
 ## What this project is for
 
@@ -101,36 +101,47 @@ The app already has a small tracking contract:
 - `identify(userId, traits?)`
 - `capture(event, props?)`
 - `reset()`
+- `destroy()`
 
 What is already hooked up:
 
-- Route changes call `page(...)`
+- Route changes call `page(...)`, which sends `route_viewed`
 - Session changes call `identify(...)` and `reset()`
+- Sign-in, sign-up, and sign-out actions send explicit tracking events
 - Onboarding completion calls `capture("onboarding_completed", ...)`
 - Project creation calls `capture("project_created", ...)`
+- Project archive and restore actions call `capture("project_archive_toggled", ...)`
 - Task changes call `capture("task_status_changed", ...)`
 - Team invites call `capture("teammate_invited", ...)`
-- Fluxly loads globally from the root layout through the official `@getfluxly/sdk-js` browser package
+- Workspace settings changes call `capture("workspace_settings_updated", ...)`
+- Notification reads call `capture("notification_marked_read", ...)`
+- Playground controls send custom events for tabs, modal open and close, toasts, inputs, pagination, and reorder actions
+- GetFluxly loads globally from the root layout through the official `@getfluxly/sdk-js` browser package
 
-Fluxly test setup in this repo:
+GetFluxly test setup in this repo:
 
 - Config is injected in [`src/app/layout.tsx`](/Users/dineshmiriyala/projects/test-project-1/src/app/layout.tsx)
-- The SDK script comes from `https://cdn.jsdelivr.net/npm/@getfluxly/sdk-js@0.1.1/dist/fluxly.iife.js`
+- The SDK script comes from `https://cdn.jsdelivr.net/npm/@getfluxly/sdk-js@0.1.3/dist/gflux.iife.js`
 - The current API host is `https://api.getfluxly.com`
-- The current test key is the provided `pk_test_...` key in the root layout script block
+- The current test key is `pk_test_9xyqsogP_RAcYr86w1wwoXxzVnP0uU0gHtMffDM3s`
+- The SDK global is `window.gflux`
+- The config global is `window.__GFLUX__`
 
-To plug in your real tracker:
+How the local adapter maps to GetFluxly:
 
-1. Open [`src/lib/analytics/adapter.ts`](/Users/dineshmiriyala/projects/test-project-1/src/lib/analytics/adapter.ts)
-2. Replace the stub export with your real client
-3. Keep the same `AnalyticsClient` shape so the pages do not need changes
+- `page(...)` sends `gflux.track("route_viewed", ...)`
+- `identify(...)` sends `gflux.identify(...)`
+- `capture(...)` sends `gflux.track(...)`
+- `reset()` sends `gflux.reset()`
+- `destroy()` clears queued local calls and sends `gflux.destroy()` if the SDK is loaded
+- Calls wait briefly for the CDN SDK so early page and auth events are not lost during startup
 
-To test the external Fluxly autocapture script:
+To test GetFluxly tracking:
 
 1. Start the app with `npm run dev`
 2. Open the site in a browser that can reach `https://api.getfluxly.com`
 3. Move through pages, click buttons and links, and submit forms
-4. Check your Fluxly project for `page_view`, `autocapture_click`, `autocapture_form`, and `page_leave`
+4. Check your GetFluxly project for `page_view`, `autocapture_click`, `autocapture_form`, `page_leave`, `route_viewed`, and the custom app events listed above
 
 ## Run locally
 
@@ -169,3 +180,4 @@ If you want a quick analytics test run, do this:
 - Production build verified locally on `2026-04-06 16:56:45 IST`
 - Fluxly autocapture script added on `2026-04-10 16:32:21 IST`
 - Fluxly tracking moved to the official CDN package on `2026-04-11 12:24:18 IST`
+- GetFluxly SDK upgraded and adapter tracking documented on `2026-04-13 21:56:01 IST`

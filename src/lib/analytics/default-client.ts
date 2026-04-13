@@ -23,5 +23,8 @@ export function createConsoleAnalyticsClient(): AnalyticsClient {
     reset() {
       logEvent("reset", "session_reset");
     },
+    destroy() {
+      logEvent("destroy", "sdk_destroyed");
+    },
   };
 }

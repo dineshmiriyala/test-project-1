@@ -51,10 +51,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!isReady) {
+      return;
+    }
+
     try {
       if (session) {
         analytics.identify(session.id, {
           email: session.email,
+          name: session.name,
           plan: session.plan,
           company: session.company,
           onboardingCompleted: session.onboardingCompleted,
@@ -66,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Failed to sync session with analytics", error);
     }
-  }, [analytics, session]);
+  }, [analytics, isReady, session]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
@@ -75,6 +80,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       async signIn(input) {
         const nextSession = mockRepository.signIn(input.email, input.password);
         setSession(nextSession);
+        analytics.capture("sign_in_completed", {
+          userId: nextSession.id,
+          email: nextSession.email,
+          plan: nextSession.plan,
+          onboardingCompleted: nextSession.onboardingCompleted,
+        });
         pushToast({
           tone: "success",
           title: "Signed in",
@@ -94,6 +105,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
         mockRepository.saveSession(nextSession);
         setSession(nextSession);
+        analytics.capture("sign_up_completed", {
+          userId: nextSession.id,
+          email: nextSession.email,
+          company: nextSession.company,
+          plan: nextSession.plan,
+        });
         pushToast({
           tone: "success",
           title: "Account created",
@@ -103,6 +120,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       },
       signOut() {
         try {
+          // Track the explicit logout click before session reset clears the GetFluxly identity.
+          analytics.capture("sign_out_requested", {
+            userId: session?.id ?? "unknown",
+            email: session?.email ?? "unknown",
+          });
           mockRepository.signOut();
           setSession(null);
           pushToast({

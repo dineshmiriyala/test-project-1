@@ -24,7 +24,7 @@ export const docsContent: DocArticle[] = [
       },
       {
         heading: "How to wire your tracker later",
-        body: "Swap the export in the analytics adapter file with your real client if you want app-owned events. This repo also loads the official Fluxly browser SDK globally from the root layout.",
+        body: "The analytics adapter already sends app-owned events to GetFluxly. The root layout also loads the official GetFluxly browser SDK globally.",
       },
     ],
   },
@@ -73,19 +73,19 @@ export const docsContent: DocArticle[] = [
     sections: [
       {
         heading: "Automatic page views",
-        body: "The analytics provider watches route and search parameter changes, then emits page calls through the adapter.",
+        body: "The GetFluxly SDK auto-captures page views. The analytics provider also sends a route_viewed event when route or search parameters change.",
       },
       {
         heading: "Intentional custom events",
-        body: "Onboarding completion, project creation, task updates, and teammate invites already send explicit capture calls through the same client.",
+        body: "Sign-in, sign-up, sign-out, onboarding completion, project changes, task updates, teammate invites, workspace settings, notification reads, and playground actions send explicit track calls through the same client.",
       },
       {
         heading: "Global autocapture",
-        body: "The root layout injects a Fluxly config block and then loads @getfluxly/sdk-js from jsDelivr so the whole app uses the official Fluxly browser package.",
+        body: "The root layout injects a window.__GFLUX__ config block and then loads @getfluxly/sdk-js@0.1.3 from jsDelivr so the whole app uses the latest GetFluxly browser package.",
       },
       {
-        heading: "Safe default",
-        body: "The app-owned analytics adapter still only logs to the console. That keeps the built-in custom event layer safe while you test the external Fluxly SDK.",
+        heading: "Safe startup",
+        body: "The adapter waits briefly for window.gflux before it sends events. If the CDN script cannot load, it drops the queued events instead of breaking the app.",
       },
     ],
   },

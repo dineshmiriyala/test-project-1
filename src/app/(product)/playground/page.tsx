@@ -54,6 +54,87 @@ export default function PlaygroundPage() {
   const [radioValue, setRadioValue] = useState("email");
   const [selectedPlan, setSelectedPlan] = useState("growth");
 
+  function openFeedbackModal(source: string) {
+    analytics.capture("playground_modal_opened", {
+      source,
+    });
+    setIsModalOpen(true);
+  }
+
+  function closeFeedbackModal(source: string) {
+    analytics.capture("playground_modal_closed", {
+      source,
+    });
+    setIsModalOpen(false);
+  }
+
+  function triggerToast(tone: "info" | "success", source: string) {
+    analytics.capture("playground_toast_triggered", {
+      tone,
+      source,
+    });
+    pushToast({
+      tone,
+      title: tone === "success" ? "Success toast" : "Toast fired",
+      body:
+        tone === "success"
+          ? "Useful for validating click capture with transient UI state."
+          : "This is here so you can observe click capture plus transient UI feedback.",
+    });
+  }
+
+  function handleTabChange(id: string) {
+    analytics.capture("playground_tab_selected", {
+      tab: id,
+    });
+    setActiveTab(id);
+  }
+
+  function handleAccordionToggle(id: string) {
+    analytics.capture("playground_accordion_toggled", {
+      item: id,
+      willOpen: openItem !== id,
+    });
+    setOpenItem((current) => (current === id ? null : id));
+  }
+
+  function handleSearchChange(value: string) {
+    // Track only length so the event shows input use without storing typed text.
+    analytics.capture("playground_search_changed", {
+      queryLength: value.trim().length,
+      hasQuery: Boolean(value.trim()),
+    });
+    setSearch(value);
+  }
+
+  function handlePlanChange(value: string) {
+    analytics.capture("playground_plan_selected", {
+      plan: value,
+    });
+    setSelectedPlan(value);
+  }
+
+  function handleDigestToggle(isEnabled: boolean) {
+    analytics.capture("playground_digest_toggled", {
+      enabled: isEnabled,
+    });
+    setSwitchEnabled(isEnabled);
+  }
+
+  function handleContactModeChange(value: string) {
+    analytics.capture("playground_contact_mode_selected", {
+      mode: value,
+    });
+    setRadioValue(value);
+  }
+
+  function handlePageChange(nextPage: number) {
+    analytics.capture("playground_page_changed", {
+      page: nextPage,
+    });
+    setPage(nextPage);
+  }
+
   function moveItem(index: number, direction: -1 | 1) {
     const targetIndex = index + direction;
 
@@ -82,19 +163,13 @@ export default function PlaygroundPage() {
           filters, pagination, toasts, toggles, and a reorderable list.
         </p>
         <div className="button-row">
-          <button className="button-primary" type="button" onClick={() => setIsModalOpen(true)}>
+          <button className="button-primary" type="button" onClick={() => openFeedbackModal("hero")}>
             Open modal
           </button>
           <button
             className="button-secondary"
             type="button"
-            onClick={() =>
-              pushToast({
-                tone: "info",
-                title: "Toast fired",
-                body: "This is here so you can observe click capture plus transient UI feedback.",
-              })
-            }
+            onClick={() => triggerToast("info", "hero")}
           >
             Trigger toast
           </button>
@@ -105,7 +180,7 @@ export default function PlaygroundPage() {
       </section>
 
       <section className="content-block stack-xl">
-        <Tabs items={playgroundTabs} activeId={activeTab} onChange={setActiveTab} />
+        <Tabs items={playgroundTabs} activeId={activeTab} onChange={handleTabChange} />
 
         {activeTab === "inputs" ? (
           <div className="card-grid two-up">
@@ -113,13 +188,13 @@ export default function PlaygroundPage() {
               <h2>Form controls</h2>
               <label className="field">
                 <span>Search docs</span>
-                <input value={search} onChange={(event) => setSearch(event.target.value)} />
+                <input value={search} onChange={(event) => handleSearchChange(event.target.value)} />
               </label>
               <label className="field">
                 <span>Plan dropdown</span>
                 <select
                   value={selectedPlan}
-                  onChange={(event) => setSelectedPlan(event.target.value)}
+                  onChange={(event) => handlePlanChange(event.target.value)}
                 >
                   <option value="starter">Starter</option>
                   <option value="growth">Growth</option>
@@ -131,7 +206,7 @@ export default function PlaygroundPage() {
                   <input
                     type="checkbox"
                     checked={switchEnabled}
-                    onChange={(event) => setSwitchEnabled(event.target.checked)}
+                    onChange={(event) => handleDigestToggle(event.target.checked)}
                   />
                   <span>Enable release digest</span>
                 </label>
@@ -140,7 +215,7 @@ export default function PlaygroundPage() {
                     type="radio"
                     name="contact"
                     checked={radioValue === "email"}
-                    onChange={() => setRadioValue("email")}
+                    onChange={() => handleContactModeChange("email")}
                   />
                   <span>Email me updates</span>
                 </label>
@@ -149,7 +224,7 @@ export default function PlaygroundPage() {
                     type="radio"
                     name="contact"
                     checked={radioValue === "slack"}
-                    onChange={() => setRadioValue("slack")}
+                    onChange={() => handleContactModeChange("slack")}
                   />
                   <span>Send updates to Slack</span>
                 </label>
@@ -161,7 +236,7 @@ export default function PlaygroundPage() {
               <Accordion
                 items={accordionItems}
                 openId={openItem}
-                onToggle={(id) => setOpenItem((current) => (current === id ? null : id))}
+                onToggle={handleAccordionToggle}
               />
             </article>
           </div>
@@ -175,13 +250,7 @@ export default function PlaygroundPage() {
                 <button
                   className="button-primary"
                   type="button"
-                  onClick={() =>
-                    pushToast({
-                      tone: "success",
-                      title: "Success toast",
-                      body: "Useful for validating click capture with transient UI state.",
-                    })
-                  }
+                  onClick={() => triggerToast("success", "feedback-tab")}
                 >
                   Success toast
                 </button>
@@ -192,7 +261,7 @@ export default function PlaygroundPage() {
                     analytics.capture("playground_feedback_requested", {
                       area: "feedback-tab",
                     });
-                    setIsModalOpen(true);
+                    openFeedbackModal("feedback-tab");
                   }}
                 >
                   Feedback modal
@@ -202,7 +271,7 @@ export default function PlaygroundPage() {
                 <button
                   className="button-secondary"
                   type="button"
-                  onClick={() => setPage((current) => Math.max(1, current - 1))}
+                  onClick={() => handlePageChange(Math.max(1, page - 1))}
                 >
                   Previous
                 </button>
@@ -210,7 +279,7 @@ export default function PlaygroundPage() {
                 <button
                   className="button-secondary"
                   type="button"
-                  onClick={() => setPage((current) => Math.min(5, current + 1))}
+                  onClick={() => handlePageChange(Math.min(5, page + 1))}
                 >
                   Next
                 </button>
@@ -288,14 +357,23 @@ export default function PlaygroundPage() {
         open={isModalOpen}
         title="Fake feedback modal"
         description="Use this to test overlay clicks, dialog interactions, and close patterns."
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => closeFeedbackModal("modal-dismiss")}
       >
         <div className="stack-md">
           <label className="field">
             <span>What felt rough?</span>
             <textarea placeholder="Write anything. This does not go anywhere." />
           </label>
-          <button className="button-primary button-block" type="button" onClick={() => setIsModalOpen(false)}>
+          <button
+            className="button-primary button-block"
+            type="button"
+            onClick={() => {
+              analytics.capture("playground_feedback_submitted", {
+                source: "modal",
+              });
+              closeFeedbackModal("feedback-submit");
+            }}
+          >
             Submit fake feedback
           </button>
         </div>
